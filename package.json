@@ -1,5 +1,25 @@
 {
   "dependencies": {
-    "express": "^4.17.3"
-  }
+    "express": "^4.17.3",
+    "sqlite3": "^5.0.2"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "auctionistagrupp3",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbrahamDikmen/auctionistaGrupp3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AbrahamDikmen/auctionistaGrupp3/issues"
+  },
+  "homepage": "https://github.com/AbrahamDikmen/auctionistaGrupp3#readme",
+  "description": ""
 }
