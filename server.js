@@ -10,6 +10,7 @@ server.use((request, response, next) => {
   next();
 });
 
+
 // lägg till session-hantering
 session = require("express-session");
 server.use(
@@ -35,5 +36,11 @@ db.run = util.promisify(db.run);
 
 const menuItems = require("./menu-items.json");
 const req = require("express/lib/request");
-// Antonio was hereS
-// Jennie is best
+
+server.get('/data/objekt/', async (request, response) => {
+
+    let query = "SELECT * FROM menuitems "
+    let result = await db.all(query)
+    response.json(result)
+
+})

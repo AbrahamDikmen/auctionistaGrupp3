@@ -9,7 +9,9 @@
   "name": "auctionistagrupp3",
   "version": "1.0.0",
   "main": "server.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AbrahamDikmen/auctionistaGrupp3.git"
