@@ -44,9 +44,9 @@ server.get("/data/bud", async (request, response) => {
 });
 
 // GET (read, select) bids on one item
-// http://localhost:3000/data/bud/2
+// http://localhost:3000/data/bud/1
 server.get("/data/bud/:objekt_id", async (request, response) => {
-  // request.params.id === 2
+  // request.params.objekt_id === 1
 
   let query =
     "SELECT bud.objekt_id, objekt.titel, anvandare.anvandarnamn AS budgivare, bud.bud_pris ||' SEK' AS bud_pris, bud.bud_tid, status.status FROM bud, anvandare, objekt, status WHERE bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND objekt.status = status.id AND bud.objekt_id = ?";
