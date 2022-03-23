@@ -34,12 +34,11 @@ const db = new sqlite3.Database("./database/auctionista.db");
 db.all = util.promisify(db.all);
 db.run = util.promisify(db.run);
 
-const menuItems = require("./menu-items.json");
 const req = require("express/lib/request");
 
 server.get('/data/objekt/', async (request, response) => {
 
-    let query = "SELECT * FROM menuitems "
+    let query = "SELECT titel FROM objekt"
     let result = await db.all(query)
     response.json(result)
 
