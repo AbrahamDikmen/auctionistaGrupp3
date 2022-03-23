@@ -34,3 +34,22 @@ db.all = util.promisify(db.all);
 db.run = util.promisify(db.run);
 
 const req = require("express/lib/request");
+
+// GET  (read, select) all bids
+server.get("/data/bud", async (request, response) => {
+  let query =
+    "SELECT bud.objekt_id, objekt.titel, anvandare.anvandarnamn AS budgivare, bud.bud_pris ||' SEK' AS bud_pris, bud.bud_tid, status.status FROM bud, anvandare, objekt, status WHERE bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND objekt.status = status.id";
+  let result = await db.all(query);
+  response.json(result);
+});
+
+// GET (read, select) bids on one item
+// http://localhost:3000/data/bud/2
+server.get("/data/bud/:objekt_id", async (request, response) => {
+  // request.params.id === 2
+
+  let query =
+    "SELECT bud.objekt_id, objekt.titel, anvandare.anvandarnamn AS budgivare, bud.bud_pris ||' SEK' AS bud_pris, bud.bud_tid, status.status FROM bud, anvandare, objekt, status WHERE bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND objekt.status = status.id AND bud.objekt_id = ?";
+  let result = await db.all(query, [request.params.objekt_id]);
+  response.json(result);
+});
