@@ -22,29 +22,6 @@ server.use(
 );
 
 
-server.post("/data/login", async (request, response) => {
-
-  let query = await db.all(
-    "SELECT id, anvandarnamn, losenord FROM Anvandare WHERE anvandarnamn = ? AND losenord = ?",
-    [request.body.anvandarnamn, request.body.losenord]
-  )
-
-  /*
-    OM query arrayn är större än 0
-    Lägg till Användaren i session 
-    skicka tillbaka användaren
-  */
-  
-  if (query.length > 0) {
-    request.session.query = query[0]
-    response.json(query[0])
-    return;
-  } else {
-    response.json({ "status": "Wrong Username/Password"})
-  }
-})
-
-
 // starta servern
 server.listen(3000, () => {
   console.log("server started at http://localhost:3000/data");
@@ -76,4 +53,26 @@ server.get('/data/objekt/bid-list', async (request, response) => {
     let query = 'SELECT titel, bud_pris FROM objekt, bud WHERE objekt.id = bud.id;'
     let result = await db.all(query)
     response.json(result)
+})
+
+server.post("/data/login", async (request, response) => {
+
+  let query = await db.all(
+    "SELECT id, anvandarnamn, losenord FROM Anvandare WHERE anvandarnamn = ? AND losenord = ?",
+    [request.body.anvandarnamn, request.body.losenord]
+  )
+
+  /*
+    OM query arrayn är större än 0
+    Lägg till Användaren i session 
+    skicka tillbaka användaren
+  */
+  
+  if (query.length > 0) {
+    request.session.query = query[0]
+    response.json(query[0])
+    return;
+  } else {
+    response.json({ "status": "Wrong Username/Password"})
+  }
 })
