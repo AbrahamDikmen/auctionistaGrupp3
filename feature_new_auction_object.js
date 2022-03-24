@@ -12,6 +12,7 @@ server.post('/data/new_auction_object', async (request, response)=>{
         [request.body.saljare,
         request.body.beskrivning,
         request.body.titel,
+        request.body.kategori,
         request.body.start_tid,
         request.body.slut_tid,
         request.body.bild,
