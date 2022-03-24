@@ -42,7 +42,7 @@ server.get('/data/anvandare', async (request, response)=>{
     response.json(result)
      
   })
-   // regestrera användare 
+   // regestrering av användare 
    server.post('/data/anvandare', async (request, response)=>{
     let query = `INSERT INTO anvandare 
     (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
