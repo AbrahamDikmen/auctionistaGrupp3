@@ -53,4 +53,8 @@ server.get('/data/objekt/bid-list', async (request, response) => {
     let result = await db.all(query)
     response.json(result)
 })
+<<<<<<< HEAD
 //hejehjehejeje
+=======
+//Hej
+>>>>>>> main
