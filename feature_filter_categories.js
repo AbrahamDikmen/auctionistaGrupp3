@@ -7,7 +7,7 @@
 // Feature filter by category (14 & 15)
 
 // Code for filter by ID number 
-server.get('/auction_object/category/:id', async (request, response)=>{
+server.get('/data/category/:id', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = ?"
     let result = await db.all(query, [request.params.id])
@@ -16,7 +16,7 @@ server.get('/auction_object/category/:id', async (request, response)=>{
 
 //Code for filter by text
 // Cykel
-server.get('/auction_object/category/cykel', async (request, response)=>{
+server.get('/data/category/cykel', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 1"
     let result = await db.all(query, [request.params.id])
@@ -24,7 +24,7 @@ server.get('/auction_object/category/cykel', async (request, response)=>{
 })
 
 // Mobil
-server.get('/auction_object/category/mobil', async (request, response)=>{
+server.get('/data/category/mobil', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 2"
     let result = await db.all(query, [request.params.id])
@@ -32,7 +32,7 @@ server.get('/auction_object/category/mobil', async (request, response)=>{
 })
 
 // Djur
-server.get('/auction_object/category/djur', async (request, response)=>{
+server.get('/data/category/djur', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 3"
     let result = await db.all(query, [request.params.id])
@@ -40,7 +40,7 @@ server.get('/auction_object/category/djur', async (request, response)=>{
 })
 
 // Bil
-server.get('/auction_object/category/bil', async (request, response)=>{
+server.get('/data/category/bil', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 4"
     let result = await db.all(query, [request.params.id])
@@ -48,7 +48,7 @@ server.get('/auction_object/category/bil', async (request, response)=>{
 })
 
 // Kläder & skor
-server.get('/auction_object/category/klader&skor', async (request, response)=>{
+server.get('/data/category/klader&skor', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 5"
     let result = await db.all(query, [request.params.id])
@@ -56,7 +56,7 @@ server.get('/auction_object/category/klader&skor', async (request, response)=>{
 })
 
 // Fiske
-server.get('/auction_object/category/fiske', async (request, response)=>{
+server.get('/data/category/fiske', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 6"
     let result = await db.all(query, [request.params.id])
@@ -64,7 +64,7 @@ server.get('/auction_object/category/fiske', async (request, response)=>{
 })
 
 // Sport
-server.get('/auction_object/category/sport', async (request, response)=>{
+server.get('/data/category/sport', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 7"
     let result = await db.all(query, [request.params.id])
@@ -72,7 +72,7 @@ server.get('/auction_object/category/sport', async (request, response)=>{
 })
 
 // Möbler
-server.get('/auction_object/category/mobler', async (request, response)=>{
+server.get('/data/category/mobler', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 8"
     let result = await db.all(query, [request.params.id])
@@ -80,7 +80,7 @@ server.get('/auction_object/category/mobler', async (request, response)=>{
 })
 
 // Verktyg
-server.get('/auction_object/category/verktyg', async (request, response)=>{
+server.get('/data/category/verktyg', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 9"
     let result = await db.all(query, [request.params.id])
@@ -88,7 +88,7 @@ server.get('/auction_object/category/verktyg', async (request, response)=>{
 })
 
 // Dator
-server.get('/auction_object/category/dator', async (request, response)=>{
+server.get('/data/category/dator', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 10"
     let result = await db.all(query, [request.params.id])
@@ -96,7 +96,7 @@ server.get('/auction_object/category/dator', async (request, response)=>{
 })
 
 // Teknik
-server.get('/auction_object/category/teknik', async (request, response)=>{
+server.get('/data/category/teknik', async (request, response)=>{
 
     let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 11"
     let result = await db.all(query, [request.params.id])
