@@ -23,7 +23,7 @@ server.use(
 
 // starta servern
 server.listen(3000, () => {
-  console.log("server started at http://localhost:3000/data");
+  console.log("server started at http://localhost:3000");
 });
 
 // data
