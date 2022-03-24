@@ -53,3 +53,10 @@ server.get("/data/bud/:objekt_id", async (request, response) => {
   let result = await db.all(query, [request.params.objekt_id]);
   response.json(result);
 });
+
+server.get("/data/search/:string", async (request, response) => {
+  let query = "SELECT * FROM  objekt WHERE objekt.titel LIKE ?";
+  let modifiedString = `%${request.params.string}%`;
+  let result = await db.all(query, modifiedString);
+  response.json(result);
+});
