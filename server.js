@@ -100,6 +100,7 @@ server.post("/data/login", async (request, response) => {
 9. Som användare vill jag kunna skapa nya auktionsobjekt.
 11. Som användare vill jag att auktinsobjekt ska innehålla minst, titel,
 beskrivning, starttid, sluttid och bilder.
+12.Som användare vill jag kunna sätta ett utgångspris på mina auktionsobjekt.
 */
 
 // Feature for new object
