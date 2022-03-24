@@ -37,3 +37,28 @@ const req = require("express/lib/request");
 // Antonio was hereS
 // Jennie is best
 
+// lista av användare
+server.get('/data/anvandare', async (request, response)=>{
+    let query = "SELECT * FROM anvandare"
+    let result = await db.all(query)
+    response.json(result)
+     
+  })
+   // regestrera användare 
+   server.post('/data/anvandare', async (request, response)=>{
+    let query = `INSERT INTO anvandare 
+    (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
+      VALUES (?,?,?,?,?,?,?,?,?,?)`
+    await db.run(query, 
+      [
+        request.body.namn, 
+        request.body.efternamn, 
+        request.body.anvandarnamn, 
+        request.body.telefonnummer, 
+        request.body.adress,
+        request.body.postkod, 
+        request.body.ort, 
+        request.body.mail, 
+        request.body.bild])
+    response.json({result: "A customer was added"})
+  })
