@@ -36,30 +36,12 @@ db.run = util.promisify(db.run);
 const req = require("express/lib/request");
 
 // lista av användare
-server.get('/data/anvandare', async (request, response)=>{
-    let query = "SELECT * FROM anvandare"
-    let result = await db.all(query)
-    response.json(result)
-     
-  })
-   // regestrering av användare 
-   server.post('/data/anvandare', async (request, response)=>{
-    let query = `INSERT INTO anvandare 
-    (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
-      VALUES (?,?,?,?,?,?,?,?,?,?)`
-    await db.run(query, 
-      [
-        request.body.namn, 
-        request.body.efternamn, 
-        request.body.anvandarnamn, 
-        request.body.telefonnummer, 
-        request.body.adress,
-        request.body.postkod, 
-        request.body.ort, 
-        request.body.mail, 
-        request.body.bild])
-    response.json({result: "A customer was added"})
-  })
+server.get("/data/anvandare", async (request, response) => {
+  let query = "SELECT * FROM anvandare";
+  let result = await db.all(query);
+  response.json(result);
+});
+
 //Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. / J&M
 server.get("/data/objekt/summary-list", async (request, response) => {
   let query = "SELECT titel, start_pris, bild FROM objekt";
@@ -100,6 +82,25 @@ server.get("/data/bud/:objekt_id", async (request, response) => {
   response.json(result);
 });
 
+// registrering av användare
+server.post("/data/anvandare", async (request, response) => {
+  let query = `INSERT INTO anvandare 
+    (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
+      VALUES (?,?,?,?,?,?,?,?,?,?)`;
+  await db.run(query, [
+    request.body.namn,
+    request.body.efternamn,
+    request.body.anvandarnamn,
+    request.body.telefonnummer,
+    request.body.adress,
+    request.body.postkod,
+    request.body.ort,
+    request.body.mail,
+    request.body.bild,
+  ]);
+  response.json({ result: "A customer was added" });
+});
+
 server.post("/data/login", async (request, response) => {
   let query = await db.all(
     "SELECT id, anvandarnamn, losenord FROM Anvandare WHERE anvandarnamn = ? AND losenord = ?",
@@ -130,18 +131,20 @@ beskrivning, starttid, sluttid och bilder.
 
 // Feature for new object
 
-server.post('/data/new_auction_object', async (request, response)=>{
-    let query = "INSERT INTO objekt (saljare, beskrivning, titel, kategori, start_tid, slut_tid, bild, start_pris, dold_slutpris, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    await db.run(query,
-        [request.body.saljare,
-        request.body.beskrivning,
-        request.body.titel,
-        request.body.kategori,
-        request.body.start_tid,
-        request.body.slut_tid,
-        request.body.bild,
-        request.body.start_pris,
-        request.body.dold_slutpris,
-        request.body.status])
-    response.json({result: "One new auction object was created"})
-})
+server.post("/data/new_auction_object", async (request, response) => {
+  let query =
+    "INSERT INTO objekt (saljare, beskrivning, titel, kategori, start_tid, slut_tid, bild, start_pris, dold_slutpris, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  await db.run(query, [
+    request.body.saljare,
+    request.body.beskrivning,
+    request.body.titel,
+    request.body.kategori,
+    request.body.start_tid,
+    request.body.slut_tid,
+    request.body.bild,
+    request.body.start_pris,
+    request.body.dold_slutpris,
+    request.body.status,
+  ]);
+  response.json({ result: "One new auction object was created" });
+});
