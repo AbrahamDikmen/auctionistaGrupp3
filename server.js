@@ -35,7 +35,7 @@ db.run = util.promisify(db.run);
 
 const req = require("express/lib/request");
 
-// GET  (read, select) all bids
+// Alla
 server.get("/data/bud", async (request, response) => {
   let query =
     "SELECT bud.objekt_id, objekt.titel, anvandare.anvandarnamn AS budgivare, bud.bud_pris ||' SEK' AS bud_pris, bud.bud_tid, status.status FROM bud, anvandare, objekt, status WHERE bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND objekt.status = status.id";
@@ -43,7 +43,8 @@ server.get("/data/bud", async (request, response) => {
   response.json(result);
 });
 
-// GET (read, select) bids on one item
+// 5.Som besökare vill jag kunna se nuvarande bud på auktionsobjekt i detaljsidor.
+
 // http://localhost:3000/data/bud/1
 server.get("/data/bud/:objekt_id", async (request, response) => {
   // request.params.objekt_id === 1
@@ -51,12 +52,5 @@ server.get("/data/bud/:objekt_id", async (request, response) => {
   let query =
     "SELECT bud.objekt_id, objekt.titel, anvandare.anvandarnamn AS budgivare, bud.bud_pris ||' SEK' AS bud_pris, bud.bud_tid, status.status FROM bud, anvandare, objekt, status WHERE bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND objekt.status = status.id AND bud.objekt_id = ?";
   let result = await db.all(query, [request.params.objekt_id]);
-  response.json(result);
-});
-
-server.get("/data/search/:string", async (request, response) => {
-  let query = "SELECT * FROM  objekt WHERE objekt.titel LIKE ?";
-  let modifiedString = `%${request.params.string}%`;
-  let result = await db.all(query, modifiedString);
   response.json(result);
 });
