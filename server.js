@@ -35,22 +35,21 @@ db.run = util.promisify(db.run);
 
 const req = require("express/lib/request");
 
-//Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista.
+//Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. / J&M
 server.get('/data/objekt/summary-list', async (request, response) => {
     let query = "SELECT titel, start_pris, bild FROM objekt"
     let result = await db.all(query)
     response.json(result)
 })
-//Som besökare vill jag kunna se detaljer för varje auktionsobjekt.
+//Som besökare vill jag kunna se detaljer för varje auktionsobjekt. / J&M
 server.get('/data/objekt/details', async (request, response) => {
     let query = 'SELECT anvandare.anvandarnamn, objekt.saljare, objekt.beskrivning, objekt.titel, objekt.kategori, objekt.start_tid, objekt.slut_tid, objekt.bild, objekt.start_pris, objekt.status FROM objekt,anvandare WHERE anvandare.id = objekt.saljare'
     let result = await db.all(query)
     response.json(result)
 })
-//Som besökare vill jag kunna se nuvarande bud på auktionsobjekt i listvyer
+//Som besökare vill jag kunna se nuvarande bud på auktionsobjekt i listvyer / J&M
 server.get('/data/objekt/bid-list', async (request, response) => {
     let query = 'SELECT titel, bud_pris FROM objekt, bud WHERE objekt.id = bud.id;'
     let result = await db.all(query)
     response.json(result)
 })
-//Hej
