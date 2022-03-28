@@ -1,6 +1,5 @@
-
-
-
+//25.Som användare vill jag kunna skicka meddelande till en säljare av ett auktionsobjekt.
+//26.Som säljare av ett auktionsobjekt vill jag kunna svara på meddelande från användare. 
 
 // First contact message
 // Creates the connection between two users.
