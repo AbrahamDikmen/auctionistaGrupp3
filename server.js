@@ -53,24 +53,6 @@ server.get("/data/mina-auktioner/:id", async (request, response) => {
   response.json(result);
 });
 
-// 6.Som besökare vill jag kunna registrera ett nytt konto och bli användare
-   server.post('/data/anvandare', async (request, response)=>{
-    let query = `INSERT INTO anvandare 
-    (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
-      VALUES (?,?,?,?,?,?,?,?,?,?)`
-    await db.run(query, 
-      [
-        request.body.namn, 
-        request.body.efternamn, 
-        request.body.anvandarnamn, 
-        request.body.telefonnummer, 
-        request.body.adress,
-        request.body.postkod, 
-        request.body.ort, 
-        request.body.mail, 
-        request.body.bild])
-    response.json({result: "A customer was added"})
-  })
 server.get("/data/anvandare", async (request, response) => {
   let query = "SELECT * FROM anvandare";
   let result = await db.all(query);
@@ -114,17 +96,6 @@ server.get("/data/bud/:objekt_id", async (request, response) => {
   let query =
     "SELECT bud.objekt_id, objekt.titel, anvandare.anvandarnamn AS budgivare, bud.bud_pris ||' SEK' AS bud_pris, bud.bud_tid, status.status FROM bud, anvandare, objekt, status WHERE bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND objekt.status = status.id AND bud.objekt_id = ?";
   let result = await db.all(query, [request.params.objekt_id]);
-  response.json(result);
-});
-
-// 17.Som användare vill jag kunna se en lista med mina egna auktionsobjekt.
-server.get("/data/mina-auktioner/:id", async (request, response) => {
-  let query = `SELECT titel, kategorier.kategori, beskrivning
-               FROM objekt
-               JOIN kategorier ON objekt.kategori = kategorier.id
-               JOIN anvandare ON objekt.saljare = anvandare.id
-               WHERE anvandare.id = ? `;
-  let result = await db.all(query, [request.params.id]);
   response.json(result);
 });
 
