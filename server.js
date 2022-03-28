@@ -36,6 +36,23 @@ db.run = util.promisify(db.run);
 const req = require("express/lib/request");
 
 // lista av användare
+server.get('/data/anvandare', async (request, response)=>{
+    let query = "SELECT * FROM anvandare"
+    let result = await db.all(query)
+    response.json(result)
+     
+  })
+// 17.Som användare vill jag kunna se en lista med mina egna auktionsobjekt.
+server.get("/data/mina-auktioner/:id", async (request, response) => {
+  let query = `SELECT titel, kategorier.kategori, beskrivning
+               FROM objekt
+               JOIN kategorier ON objekt.kategori = kategorier.id
+               JOIN anvandare ON objekt.saljare = anvandare.id
+               WHERE anvandare.id = ? `;
+  let result = await db.all(query, [request.params.id]);
+  response.json(result);
+});
+
 server.get("/data/anvandare", async (request, response) => {
   let query = "SELECT * FROM anvandare";
   let result = await db.all(query);
@@ -82,7 +99,7 @@ server.get("/data/bud/:objekt_id", async (request, response) => {
   response.json(result);
 });
 
-// registrering av användare
+// 6.Som besökare vill jag kunna registrera ett nytt konto och bli användare
 server.post("/data/anvandare", async (request, response) => {
   let query = `INSERT INTO anvandare 
     (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
