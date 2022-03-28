@@ -42,7 +42,18 @@ server.get('/data/anvandare', async (request, response)=>{
     response.json(result)
      
   })
-   // regestrering av användare 
+// 17.Som användare vill jag kunna se en lista med mina egna auktionsobjekt.
+server.get("/data/mina-auktioner/:id", async (request, response) => {
+  let query = `SELECT titel, kategorier.kategori, beskrivning
+               FROM objekt
+               JOIN kategorier ON objekt.kategori = kategorier.id
+               JOIN anvandare ON objekt.saljare = anvandare.id
+               WHERE anvandare.id = ? `;
+  let result = await db.all(query, [request.params.id]);
+  response.json(result);
+});
+
+// 6.Som besökare vill jag kunna registrera ett nytt konto och bli användare
    server.post('/data/anvandare', async (request, response)=>{
     let query = `INSERT INTO anvandare 
     (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
