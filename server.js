@@ -165,3 +165,12 @@ server.post("/data/new_auction_object", async (request, response) => {
   ]);
   response.json({ result: "One new auction object was created" });
 });
+
+//20.Som användare vill jag ha en publik profilsida där namn, 
+//publika kontaktuppgift(er) & bild visas för andra att läsa.
+server.get("/data/anvandare/:id", async (request, response) => {
+
+  let query ="SELECT bild, anvandarnamn, namn, mail FROM anvandare WHERE id = ?";
+  let result = await db.all(query, [request.params.id]);
+  response.json(result);
+});
