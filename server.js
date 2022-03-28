@@ -35,13 +35,37 @@ db.run = util.promisify(db.run);
 
 const req = require("express/lib/request");
 
-// lista av användare
-server.get('/data/anvandare', async (request, response)=>{
-    let query = "SELECT * FROM anvandare"
-    let result = await db.all(query)
-    response.json(result)
-     
-  })
+//3.
+server.get("/data/search/:string", async (request, response) => {
+  let query = `SELECT * FROM  objekt WHERE INSTR(LOWER(objekt.titel), LOWER(?))>0 OR INSTR(LOWER(objekt.beskrivning), LOWER(?))>0`;
+  let result = await db.all(query, request.params.string, request.params.string);
+  response.json(result);
+});
+
+//8.10.
+server.post('/data/bud', async (req, res) => {
+  let query = `SELECT * FROM bud WHERE bud.objekt_id = ? ORDER BY id DESC LIMIT 1`;
+  let currentBid = (await db.all(query, req.body.objekt_id))[0];
+
+  query = `SELECT saljare, status.status, pris FROM objekt,status WHERE objekt.id = ? AND objekt.status = status.id`;
+  let object = (await db.all(query, req.body.objekt_id))[0];
+
+  console.log(currentBid)
+  console.log(object)
+  console.log(req.body)
+
+  if (currentBid && req.body.bud_pris <= currentBid.bud_pris
+    || req.body.bud_givare === object.saljare
+    || object.status != 'pågående'
+    || !currentBid && req.body.bud_pris <= object.pris)
+    res.json({ bidCreated: false });
+  else {
+    query = `INSERT INTO bud (objekt_id, bud_pris, bud_givare, bud_tid) VALUES(?,?,?,?)`;
+    await db.run(query, [req.body.objekt_id, req.body.bud_pris, req.body.bud_givare, req.body.bud_tid]);
+    res.json({ bidCreated: true })
+  }
+})
+
 // 17.Som användare vill jag kunna se en lista med mina egna auktionsobjekt.
 server.get("/data/mina-auktioner/:id", async (request, response) => {
   let query = `SELECT titel, kategorier.kategori, beskrivning
@@ -170,7 +194,7 @@ server.post("/data/new_auction_object", async (request, response) => {
 //publika kontaktuppgift(er) & bild visas för andra att läsa.
 server.get("/data/anvandare/:id", async (request, response) => {
 
-  let query ="SELECT bild, anvandarnamn, namn, mail FROM anvandare WHERE id = ?";
+  let query = "SELECT bild, anvandarnamn, namn, mail FROM anvandare WHERE id = ?";
   let result = await db.all(query, [request.params.id]);
   response.json(result);
 });
@@ -186,139 +210,139 @@ server.get("/data/anvandare/:id", async (request, response) => {
 
 //Code for filter by text
 // Cykel
-server.get('/data/category/cykel', async (request, response)=>{
+server.get('/data/category/cykel', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 1"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 1"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Mobil
-server.get('/data/category/mobil', async (request, response)=>{
+server.get('/data/category/mobil', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 2"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 2"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Djur
-server.get('/data/category/djur', async (request, response)=>{
+server.get('/data/category/djur', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 3"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 3"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Bil
-server.get('/data/category/bil', async (request, response)=>{
+server.get('/data/category/bil', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 4"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 4"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Kläder & skor
-server.get('/data/category/klader&skor', async (request, response)=>{
+server.get('/data/category/klader&skor', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 5"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 5"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Fiske
-server.get('/data/category/fiske', async (request, response)=>{
+server.get('/data/category/fiske', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 6"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 6"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Sport
-server.get('/data/category/sport', async (request, response)=>{
+server.get('/data/category/sport', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 7"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 7"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Möbler
-server.get('/data/category/mobler', async (request, response)=>{
+server.get('/data/category/mobler', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 8"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 8"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Verktyg
-server.get('/data/category/verktyg', async (request, response)=>{
+server.get('/data/category/verktyg', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 9"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 9"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Dator
-server.get('/data/category/dator', async (request, response)=>{
+server.get('/data/category/dator', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 10"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 10"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Teknik
-server.get('/data/category/teknik', async (request, response)=>{
+server.get('/data/category/teknik', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 11"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = 11"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Feature filter by status (16)
 
 // Pågående
-server.get('/data/status/ongoing', async (request, response)=>{
+server.get('/data/status/ongoing', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 1"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 1"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // avslutat- mottaget
-server.get('/data/status/end_recived', async (request, response)=>{
+server.get('/data/status/end_recived', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 2"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 2"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // avslutat- skickat
-server.get('/data/status/end_shipped', async (request, response)=>{
+server.get('/data/status/end_shipped', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 3"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 3"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // avslutat- ej sålt
-server.get('/data/status/end_not_sold', async (request, response)=>{
+server.get('/data/status/end_not_sold', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 4"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 4"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
 // Code for filter categories by categories ID and status ID number 
 // Must place after string categorys and string staus code for some reason.
-server.get('/data/category/:id', async (request, response)=>{
+server.get('/data/category/:id', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = ?"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE kategori = ?"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
 
-server.get('/data/status/:id', async (request, response)=>{
+server.get('/data/status/:id', async (request, response) => {
 
-    let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = ?"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
+  let query = "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = ?"
+  let result = await db.all(query, [request.params.id])
+  response.json(result)
 })
