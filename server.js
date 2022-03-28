@@ -23,7 +23,7 @@ server.use(
 
 // starta servern
 server.listen(3000, () => {
-  console.log("server started at http://localhost:3000/data");
+  console.log("server started at http://localhost:3000");
 });
 
 // data
@@ -71,6 +71,12 @@ server.get("/data/mina-auktioner/:id", async (request, response) => {
         request.body.bild])
     response.json({result: "A customer was added"})
   })
+server.get("/data/anvandare", async (request, response) => {
+  let query = "SELECT * FROM anvandare";
+  let result = await db.all(query);
+  response.json(result);
+});
+
 //Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. / J&M
 server.get("/data/objekt/summary-list", async (request, response) => {
   let query = "SELECT titel, start_pris, bild FROM objekt";
@@ -111,6 +117,36 @@ server.get("/data/bud/:objekt_id", async (request, response) => {
   response.json(result);
 });
 
+// 17.Som användare vill jag kunna se en lista med mina egna auktionsobjekt.
+server.get("/data/mina-auktioner/:id", async (request, response) => {
+  let query = `SELECT titel, kategorier.kategori, beskrivning
+               FROM objekt
+               JOIN kategorier ON objekt.kategori = kategorier.id
+               JOIN anvandare ON objekt.saljare = anvandare.id
+               WHERE anvandare.id = ? `;
+  let result = await db.all(query, [request.params.id]);
+  response.json(result);
+});
+
+// 6.Som besökare vill jag kunna registrera ett nytt konto och bli användare
+server.post("/data/anvandare", async (request, response) => {
+  let query = `INSERT INTO anvandare 
+    (namn, efternamn, anvandarnamn, losenord, telefonnummer, adress, postkod, ort, mail, bild) 
+      VALUES (?,?,?,?,?,?,?,?,?,?)`;
+  await db.run(query, [
+    request.body.namn,
+    request.body.efternamn,
+    request.body.anvandarnamn,
+    request.body.telefonnummer,
+    request.body.adress,
+    request.body.postkod,
+    request.body.ort,
+    request.body.mail,
+    request.body.bild,
+  ]);
+  response.json({ result: "A customer was added" });
+});
+
 server.post("/data/login", async (request, response) => {
   let query = await db.all(
     "SELECT id, anvandarnamn, losenord FROM Anvandare WHERE anvandarnamn = ? AND losenord = ?",
@@ -130,4 +166,31 @@ server.post("/data/login", async (request, response) => {
   } else {
     response.json({ status: "Wrong Username/Password" });
   }
+});
+
+/*
+9. Som användare vill jag kunna skapa nya auktionsobjekt.
+11. Som användare vill jag att auktinsobjekt ska innehålla minst, titel,
+beskrivning, starttid, sluttid och bilder.
+12.Som användare vill jag kunna sätta ett utgångspris på mina auktionsobjekt.
+*/
+
+// Feature for new object
+
+server.post("/data/new_auction_object", async (request, response) => {
+  let query =
+    "INSERT INTO objekt (saljare, beskrivning, titel, kategori, start_tid, slut_tid, bild, start_pris, dold_slutpris, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  await db.run(query, [
+    request.body.saljare,
+    request.body.beskrivning,
+    request.body.titel,
+    request.body.kategori,
+    request.body.start_tid,
+    request.body.slut_tid,
+    request.body.bild,
+    request.body.start_pris,
+    request.body.dold_slutpris,
+    request.body.status,
+  ]);
+  response.json({ result: "One new auction object was created" });
 });
