@@ -383,6 +383,17 @@ server.post("/data/anvandare/betyg", async (request, response) => {
   response.json({ result: "Nytt betyg skapat" });
 });
 
+// 24.Som användare vill jag kunna se säljares betyg när jag tittar på ett auktionsobjekt
+server.get('/data/saljarens-betyg/:objektId', async (request, response)=>{
+  let query = `SELECT titel, beskrivning, betyg.betyg 
+                 FROM objekt
+                 JOIN betyg ON objekt.saljare = betyg.anvandare_id
+                 WHERE objekt.id = ?`
+  let result = await db.all(query, [request.params.objektId])
+  response.json(result)
+})
+
+
 /*
 25.Som användare vill jag kunna skicka meddelande till en säljare av ett auktionsobjekt.
 26.Som säljare av ett auktionsobjekt vill jag kunna svara på meddelande från användare.
@@ -416,14 +427,4 @@ server.get('/data/conversation/:id', async (request, response)=>{
     let query = "SELECT message FROM messages WHERE id = ?"
     let result = await db.all(query, [request.params.id])
     response.json(result)
-})
-
-// 24.Som användare vill jag kunna se säljares betyg när jag tittar på ett auktionsobjekt
-server.get('/data/saljarens-betyg/:objektId', async (request, response)=>{
-  let query = `SELECT titel, beskrivning, betyg.betyg 
-                 FROM objekt
-                 JOIN betyg ON objekt.saljare = betyg.anvandare_id
-                 WHERE objekt.id = ?`
-  let result = await db.all(query, [request.params.objektId])
-  response.json(result)
 })
