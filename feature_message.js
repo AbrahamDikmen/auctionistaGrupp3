@@ -6,10 +6,10 @@
 // First contact message
 // Creates the connection between two users.
 server.post('/data/conversation/new_conversation', async (request, response)=>{
-    let query = "INSERT INTO messages (sender, reciver, message, object) VALUES(?,?, CURRENT_DATE || ' ' || CURRENT_TIME || ':  ' || CHAR(13) || ?, ? )"
+    let query = "INSERT INTO messages (sender, receiver, message, object) VALUES(?,?, CURRENT_DATE || ' ' || CURRENT_TIME || ':  ' || CHAR(13) || ?, ? )"
     await db.run(query, [
         request.body.sender,
-        request.body.reciver,
+        request.body.receiver,
         request.body.message,
         request.body.object])
     response.json({result: "Your message has been sent."})
