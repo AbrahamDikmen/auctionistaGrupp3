@@ -23,7 +23,7 @@ server.use(
 
 // starta servern
 server.listen(3000, () => {
-  console.log("server started at http://localhost:3000/data");
+  console.log("server started at http://localhost:3000/auctionista/objekt");
 });
 
 const util = require("util");
@@ -34,24 +34,26 @@ db.run = util.promisify(db.run);
 
 // GET (read, select) all
 server.get("/auctionista/objekt", async (request, response) => {
-  let query = "SELECT * FROM objekt";
-  let result = await db.all(query);
-  response.json(result);
+  let query =
+    "SELECT id, dold_slutpris, start_pris FROM objekt WHERE objekt.id = ? AND dold_slutpris = ? AND start_pris = ?";
+
+  await db.run(query, [
+    request.body.id,
+    request.body.dold_slutpris,
+    request.body.start_pris,
+  ]);
+
+  if (request.body.dold_slutpris < request.start_pris) {
+    response.json({ response: "worked" });
+  } else {
+    response.json({ response: "not worked" });
+  }
 });
 
 // GET (read, select) one item
 
-server.get("/auctionista/objekt/", async (request, response) => {
-  let query = "SELECT * FROM objekt WHERE id = ?";
-  let result = await db.all(query, [request.params.id]);
-  response.json(result);
-
-  // response.status(404)
-  // response.json({error: "Not found"})
-});
-
 // POST (create, insert)
-server.post("/auctionista/objekt", async (request, response) => {
+server.post("/auctionista/objekt/bud", async (request, response) => {
   if (request.body.start_pris > request.body.dold_slutpris) {
     let query = "SELECT start_pris, dold_slutpris FROM objekt WHERE id = ?";
 
@@ -60,71 +62,31 @@ server.post("/auctionista/objekt", async (request, response) => {
       request.body.start_pris,
       request.body.dold_slutpris,
     ]);
-    response.json({ result: "Auction price changed" });
+    response.json({ result: "Auction sold" });
   } else {
-    response.json({ result: "not changed" });
+    response.json({ result: "not sold" });
   }
 });
 
 // PUT (update, update)
 server.put("/auctionista/objekt", async (request, response) => {
-  if (request.body.dold_slutpris > request.body.bud_pris) {
-    let query =
-      "UPDATE objekt SET start_pris = ?, dold_slutpris = ? WHERE id = ? ";
+  if (request.body.start_pris > request.body.dold_slutpris) {
+    let query = "SELECT start_pris, dold_slutpris FROM objekt WHERE id = ?";
 
     await db.run(query, [
-      request.body.id,
+      request.body.objekt.id,
       request.body.start_pris,
       request.body.dold_slutpris,
     ]);
-    response.json({ result: "Auction price changed" });
+    response.json({ result: "Auction sold" });
   } else {
-    response.json({ result: "error" });
+    response.json({ result: "not sold" });
   }
 });
 
 // DELETE (delete, delete)
-server.delete("auctionista/objekt:id", async (request, response) => {
+server.delete("/menu-items/:id", async (request, response) => {
   let query = "DELETE FROM menuitems WHERE id = ?";
   await db.run(query, [request.params.id]);
   response.json({ result: "One row delete" });
-});
-
-server.post("/data/login", async (request, response) => {
-  let query = "SELECT * FROM customers WHERE email = ? AND password = ?";
-  let result = await db.all(query, [request.body.email, request.body.password]);
-  if (result.length > 0) {
-    request.session.customer = result[0];
-    response.json({ loggedIn: true });
-  } else {
-    delete request.session.customer;
-    response.json({ loggedIn: false });
-  }
-});
-
-server.get("/data/login", async (request, response) => {
-  if (request.session.customer) {
-    let query = "SELECT * FROM customers WHERE email = ? AND password = ?";
-    let result = await db.all(query, [
-      request.session.customer.email,
-      request.session.customer.password,
-    ]);
-
-    if (result.length > 0) {
-      response.json({
-        firstname: request.session.customer.firstname,
-        lastname: request.session.customer.lastname,
-        email: request.session.customer.email,
-      });
-    } else {
-      response.json({ loggedIn: false });
-    }
-  } else {
-    response.json({ loggedIn: false });
-  }
-});
-
-server.delete("/data/login", async (request, response) => {
-  delete request.session.customer;
-  response.json({ loggedIn: false });
 });
