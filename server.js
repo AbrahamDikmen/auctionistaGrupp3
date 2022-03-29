@@ -35,18 +35,15 @@ db.run = util.promisify(db.run);
 // GET (read, select) all
 server.get("/auctionista/objekt", async (request, response) => {
   let query =
-    "SELECT id, dold_slutpris, start_pris FROM objekt WHERE objekt.id = ? AND dold_slutpris = ? AND start_pris = ?";
+    "SELECT id, dold_slutpris, start_pris FROM objekt WHERE objekt.id = ?";
 
-  await db.run(query, [
-    request.body.id,
-    request.body.dold_slutpris,
-    request.body.start_pris,
-  ]);
+  const [obj] = await db.all(query, [request.body.id]); // Array med ett objekt { data }
 
-  if (request.body.dold_slutpris < request.start_pris) {
-    response.json({ response: "worked" });
-  } else {
-    response.json({ response: "not worked" });
+  if (obj.dold_slutpris < obj.start_pris) {
+    response.json({ response: "SOLD" });
+  }
+  if (obj.dold_slutpris > obj.start_pris) {
+    response.json({ response: "NOT SOLD" });
   }
 });
 
