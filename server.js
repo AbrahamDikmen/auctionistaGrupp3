@@ -165,3 +165,13 @@ server.post("/data/new_auction_object", async (request, response) => {
   ]);
   response.json({ result: "One new auction object was created" });
 });
+
+// 24.Som användare vill jag kunna se säljares betyg när jag tittar på ett auktionsobjekt
+server.get('/data/saljarens-betyg/:objektId', async (request, response)=>{
+  let query = `SELECT titel, beskrivning, betyg.betyg 
+                 FROM objekt
+                 JOIN betyg ON objekt.saljare = betyg.anvandare_id
+                 WHERE objekt.id = ?`
+  let result = await db.all(query, [request.params.objektId])
+  response.json(result)
+})
