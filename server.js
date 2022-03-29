@@ -385,6 +385,7 @@ server.get("/data/anvandare/:id", async (request, response) => {
   let result = await db.all(query, [request.params.id]);
   response.json(result);
 });
+//21
 
 // 22. Som köpare vill jag kunna ge ett betyg efter köp av ett auktionsobjekt.
 // 23.Som säljare vill jag kunna ge ett betyg efter försäljning av ett auktionsobjekt.
