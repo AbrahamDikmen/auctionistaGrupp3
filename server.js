@@ -35,14 +35,14 @@ db.run = util.promisify(db.run);
 
 const req = require("express/lib/request");
 
-// 1. Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. 
+// 1. Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista.
 server.get("/data/objekt/summary-list", async (request, response) => {
   let query = "SELECT titel, start_pris, bild FROM objekt";
   let result = await db.all(query);
   response.json(result);
 });
 
-// 2. Som besökare vill jag kunna se detaljer för varje auktionsobjekt. 
+// 2. Som besökare vill jag kunna se detaljer för varje auktionsobjekt.
 server.get("/data/objekt/details", async (request, response) => {
   let query =
     "SELECT anvandare.anvandarnamn, objekt.saljare, objekt.beskrivning, objekt.titel, objekt.kategori, objekt.start_tid, objekt.slut_tid, objekt.bild, objekt.start_pris, objekt.status FROM objekt,anvandare WHERE anvandare.id = objekt.saljare";
@@ -135,7 +135,7 @@ server.post("/data/bud", async (req, res) => {
   let query = `SELECT * FROM bud WHERE bud.objekt_id = ? ORDER BY id DESC LIMIT 1`;
   let currentBid = (await db.all(query, req.body.objekt_id))[0];
 
-  query = `SELECT saljare, status.status, pris FROM objekt,status WHERE objekt.id = ? AND objekt.status = status.id`;
+  query = `SELECT saljare, status.status, start_pris FROM objekt,status WHERE objekt.id = ? AND objekt.status = status.id`;
   let object = (await db.all(query, req.body.objekt_id))[0];
 
   console.log(currentBid);
@@ -146,7 +146,7 @@ server.post("/data/bud", async (req, res) => {
     (currentBid && req.body.bud_pris <= currentBid.bud_pris) ||
     req.body.bud_givare === object.saljare ||
     object.status != "pågående" ||
-    (!currentBid && req.body.bud_pris <= object.pris)
+    (!currentBid && req.body.bud_pris <= object.start_pris)
   )
     res.json({ bidCreated: false });
   else {
@@ -285,7 +285,7 @@ server.get("/data/category/teknik", async (request, response) => {
   response.json(result);
 });
 
-// Feature filter by status (16)
+// 16. Feature filter by status
 
 // Pågående
 server.get("/data/status/ongoing", async (request, response) => {
@@ -296,7 +296,7 @@ server.get("/data/status/ongoing", async (request, response) => {
 });
 
 // avslutat- mottaget
-server.get("/data/status/end_recived", async (request, response) => {
+server.get("/data/status/end_received", async (request, response) => {
   let query =
     "SELECT titel, beskrivning, start_tid, slut_tid, bild, start_pris FROM objekt WHERE status = 2";
   let result = await db.all(query, [request.params.id]);
@@ -356,7 +356,7 @@ server.get("/data/anvandare", async (request, response) => {
 
 server.get("/data/:anvandare/mina_bud", async (request, response) => {
   let query =
-    "SELECT anvandare.anvandarnamn, bud.bud_givare, objekt.id AS objekt_id, objekt.titel FROM anvandare, bud, objekt WHERE bud.bud_givare = anvandare.id AND objekt.id = bud.objekt_id AND anvandare.id = ?";
+    "SELECT anvandare.anvandarnamn, bud.bud_givare, bud.bud_pris, objekt.id AS objekt_id, objekt.titel FROM anvandare, bud, objekt WHERE bud.bud_givare = anvandare.id AND objekt.id = bud.objekt_id AND anvandare.id = ?";
   let result = await db.all(query, [request.params.anvandare]);
   response.json(result);
 });
@@ -371,8 +371,9 @@ server.get("/data/anvandare/:id", async (request, response) => {
 });
 
 // 22. Som köpare vill jag kunna ge ett betyg efter köp av ett auktionsobjekt.
+// 23.Som säljare vill jag kunna ge ett betyg efter försäljning av ett auktionsobjekt.
 
-server.post("/data/anvandare/betyg", async (request, response) => {
+server.post("/data/anvandare/betygsatta", async (request, response) => {
   let query =
     "INSERT INTO betyg (anvandare_id, betyg_givare, betyg) VALUES (?, ?, ?)";
   await db.run(query, [
@@ -384,47 +385,47 @@ server.post("/data/anvandare/betyg", async (request, response) => {
 });
 
 // 24.Som användare vill jag kunna se säljares betyg när jag tittar på ett auktionsobjekt
-server.get('/data/saljarens-betyg/:objektId', async (request, response)=>{
+server.get("/data/saljarens-betyg/:objektId", async (request, response) => {
   let query = `SELECT titel, beskrivning, betyg.betyg 
                  FROM objekt
                  JOIN betyg ON objekt.saljare = betyg.anvandare_id
-                 WHERE objekt.id = ?`
-  let result = await db.all(query, [request.params.objektId])
-  response.json(result)
-})
+                 WHERE objekt.id = ?`;
+  let result = await db.all(query, [request.params.objektId]);
+  response.json(result);
+});
 
-
-/*
-25.Som användare vill jag kunna skicka meddelande till en säljare av ett auktionsobjekt.
-26.Som säljare av ett auktionsobjekt vill jag kunna svara på meddelande från användare.
-*/ 
-
+// 25.Som användare vill jag kunna skicka meddelande till en säljare av ett auktionsobjekt.
 // First contact message
 // Creates the connection between two users.
-server.post('/data/conversation/new_conversation', async (request, response)=>{
-    let query = "INSERT INTO messages (sender, receiver, message, object) VALUES(?,?, CURRENT_DATE || ' ' || CURRENT_TIME || ':  ' || CHAR(13) || ?, ? )"
+server.post(
+  "/data/conversation/new_conversation",
+  async (request, response) => {
+    let query =
+      "INSERT INTO messages (sender, receiver, message, object) VALUES(?,?, CURRENT_DATE || ' ' || CURRENT_TIME || ':  ' || CHAR(13) || ?, ? )";
     await db.run(query, [
-        request.body.sender,
-        request.body.receiver,
-        request.body.message,
-        request.body.object])
-    response.json({result: "Your message has been sent."})
-})
+      request.body.sender,
+      request.body.receiver,
+      request.body.message,
+      request.body.object,
+    ]);
+    response.json({ result: "Your message has been sent." });
+  }
+);
 
+// 26.Som säljare av ett auktionsobjekt vill jag kunna svara på meddelande från användare.
 // Reply messages
 // Update the conversation with new messages in a already existing conversation.
-server.put('/data/conversation/reply_:id', async (request, response)=>{
-    let query = "UPDATE messages SET message = message || ' ' || CHAR(13) || CHAR(13) || CURRENT_DATE || ' ' || CURRENT_TIME || ':  ' || CHAR(13) || ? WHERE id = ?"
-    await db.run(query, [
-        request.body.message,
-        request.params.id])
-    response.json({result: "Your reply has been sent."})
-})
+server.put("/data/conversation/reply_:id", async (request, response) => {
+  let query =
+    "UPDATE messages SET message = message || ' ' || CHAR(13) || CHAR(13) || CURRENT_DATE || ' ' || CURRENT_TIME || ':  ' || CHAR(13) || ? WHERE id = ?";
+  await db.run(query, [request.body.message, request.params.id]);
+  response.json({ result: "Your reply has been sent." });
+});
 
 // Read conversation
 // A get for reading the conversation.
-server.get('/data/conversation/:id', async (request, response)=>{
-    let query = "SELECT message FROM messages WHERE id = ?"
-    let result = await db.all(query, [request.params.id])
-    response.json(result)
-})
+server.get("/data/conversation/:id", async (request, response) => {
+  let query = "SELECT message FROM messages WHERE id = ?";
+  let result = await db.all(query, [request.params.id]);
+  response.json(result);
+});
