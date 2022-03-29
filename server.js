@@ -357,6 +357,15 @@ server.get("/data/status/:id", async (request, response) => {
   response.json(result);
 });
 
+// 18. Som användare vill jag kunna se en lista med auktionsobjekt jag har lagt bud på.
+
+server.get("/data/:anvandare/mina_bud", async (request, response) => {
+  let query =
+    "SELECT anvandare.anvandarnamn, bud.bud_givare, objekt.id AS objekt_id, objekt.titel FROM anvandare, bud, objekt WHERE bud.bud_givare = anvandare.id AND objekt.id = bud.objekt_id AND anvandare.id = ?";
+  let result = await db.all(query, [request.params.anvandare]);
+  response.json(result);
+});
+
 // 22. Som köpare vill jag kunna ge ett betyg efter köp av ett auktionsobjekt.
 
 server.post("/data/anvandare/betyg", async (request, response) => {
