@@ -51,21 +51,35 @@ server.get("/auctionista/objekt/:id", async (request, response) => {
 });
 
 // POST (create, insert)
-server.post("/auctionista/objekt", async (request, response) => {
-  let query = "INSERT INTO objekt (saljare, dold_slutpris) VALUES (?, ?);";
-  await db.run(query, [request.body.saljare, request.body.pris]);
-  response.json({ result: "One row created" });
+server.post("/auctionista/objekt/bud", async (request, response) => {
+  if (request.body.start_pris > request.body.dold_slutpris) {
+    let query = "SELECT start_pris, dold_slutpris FROM objekt WHERE id = ?";
+
+    await db.run(query, [
+      request.body.objekt.id,
+      request.body.start_pris,
+      request.body.dold_slutpris,
+    ]);
+    response.json({ result: "Auction sold" });
+  } else {
+    response.json({ result: "not sold" });
+  }
 });
 
 // PUT (update, update)
-server.put("/auctionista/objekt:id", async (request, response) => {
-  let query = "UPDATE menuitems SET name = ?, price = ? WHERE id = ?";
-  await db.run(query, [
-    request.body.name,
-    request.body.price,
-    request.params.id,
-  ]);
-  response.json({ result: "One row updated" });
+server.put("/auctionista/objekt", async (request, response) => {
+  if (request.body.start_pris > request.body.dold_slutpris) {
+    let query = "SELECT start_pris, dold_slutpris FROM objekt WHERE id = ?";
+
+    await db.run(query, [
+      request.body.objekt.id,
+      request.body.start_pris,
+      request.body.dold_slutpris,
+    ]);
+    response.json({ result: "Auction sold" });
+  } else {
+    response.json({ result: "not sold" });
+  }
 });
 
 // DELETE (delete, delete)
