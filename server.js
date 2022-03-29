@@ -107,7 +107,7 @@ server.post("/data/anvandare", async (request, response) => {
   response.json({ result: "A customer was added" });
 });
 
-// 7. Som användare vill jag kunna logga in. 
+// 7. Som användare vill jag kunna logga in.
 
 server.post("/data/login", async (request, response) => {
   let query = await db.all(
@@ -187,8 +187,6 @@ server.post("/data/new_auction_object", async (request, response) => {
   ]);
   response.json({ result: "One new auction object was created" });
 });
-
-
 
 /* 
 14.Som besökare vill jag kunna se auktioner inom kategorier.
@@ -363,9 +361,6 @@ server.get("/data/:anvandare/mina_bud", async (request, response) => {
   response.json(result);
 });
 
-
-
-
 //20.Som användare vill jag ha en publik profilsida där namn,
 //publika kontaktuppgift(er) & bild visas för andra att läsa.
 server.get("/data/anvandare/:id", async (request, response) => {
@@ -374,9 +369,6 @@ server.get("/data/anvandare/:id", async (request, response) => {
   let result = await db.all(query, [request.params.id]);
   response.json(result);
 });
-
-
-
 
 // 22. Som köpare vill jag kunna ge ett betyg efter köp av ett auktionsobjekt.
 
