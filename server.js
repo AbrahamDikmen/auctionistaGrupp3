@@ -35,14 +35,14 @@ db.run = util.promisify(db.run);
 
 const req = require("express/lib/request");
 
-// 1. Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. / J&M
+// 1. Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. 
 server.get("/data/objekt/summary-list", async (request, response) => {
   let query = "SELECT titel, start_pris, bild FROM objekt";
   let result = await db.all(query);
   response.json(result);
 });
 
-// 2. Som besökare vill jag kunna se detaljer för varje auktionsobjekt. / J&M
+// 2. Som besökare vill jag kunna se detaljer för varje auktionsobjekt. 
 server.get("/data/objekt/details", async (request, response) => {
   let query =
     "SELECT anvandare.anvandarnamn, objekt.saljare, objekt.beskrivning, objekt.titel, objekt.kategori, objekt.start_tid, objekt.slut_tid, objekt.bild, objekt.start_pris, objekt.status FROM objekt,anvandare WHERE anvandare.id = objekt.saljare";
