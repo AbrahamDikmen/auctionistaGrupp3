@@ -360,7 +360,12 @@ server.get("/data/status/:id", async (request, response) => {
 // 22. Som köpare vill jag kunna ge ett betyg efter köp av ett auktionsobjekt.
 
 server.post("/data/anvandare/betyg", async (request, response) => {
-  let query = "INSERT INTO menuitems (name, price) VALUES(?,?)";
-  await db.run(query, [request.body.name, request.body.price]);
-  response.json({ result: "One row created" });
+  let query =
+    "INSERT INTO betyg (anvandare_id, betyg_givare, betyg) VALUES (?, ?, ?)";
+  await db.run(query, [
+    request.body.anvandare_id,
+    request.body.betyg_givare,
+    request.body.betyg,
+  ]);
+  response.json({ result: "Nytt betyg skapat" });
 });
