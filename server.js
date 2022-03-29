@@ -41,7 +41,7 @@ server.get("/auctionista/objekt", async (request, response) => {
 
 // GET (read, select) one item
 
-server.get("/auctionista/objekt/:id", async (request, response) => {
+server.get("/auctionista/objekt/", async (request, response) => {
   let query = "SELECT * FROM objekt WHERE id = ?";
   let result = await db.all(query, [request.params.id]);
   response.json(result);
@@ -51,7 +51,7 @@ server.get("/auctionista/objekt/:id", async (request, response) => {
 });
 
 // POST (create, insert)
-server.post("/auctionista/objekt/bud", async (request, response) => {
+server.post("/auctionista/objekt", async (request, response) => {
   if (request.body.start_pris > request.body.dold_slutpris) {
     let query = "SELECT start_pris, dold_slutpris FROM objekt WHERE id = ?";
 
@@ -60,30 +60,31 @@ server.post("/auctionista/objekt/bud", async (request, response) => {
       request.body.start_pris,
       request.body.dold_slutpris,
     ]);
-    response.json({ result: "Auction sold" });
+    response.json({ result: "Auction price changed" });
   } else {
-    response.json({ result: "not sold" });
+    response.json({ result: "not changed" });
   }
 });
 
 // PUT (update, update)
 server.put("/auctionista/objekt", async (request, response) => {
-  if (request.body.start_pris > request.body.dold_slutpris) {
-    let query = "SELECT start_pris, dold_slutpris FROM objekt WHERE id = ?";
+  if (request.body.dold_slutpris > request.body.bud_pris) {
+    let query =
+      "UPDATE objekt SET start_pris = ?, dold_slutpris = ? WHERE id = ? ";
 
     await db.run(query, [
-      request.body.objekt.id,
+      request.body.id,
       request.body.start_pris,
       request.body.dold_slutpris,
     ]);
-    response.json({ result: "Auction sold" });
+    response.json({ result: "Auction price changed" });
   } else {
-    response.json({ result: "not sold" });
+    response.json({ result: "error" });
   }
 });
 
 // DELETE (delete, delete)
-server.delete("/menu-items/:id", async (request, response) => {
+server.delete("auctionista/objekt:id", async (request, response) => {
   let query = "DELETE FROM menuitems WHERE id = ?";
   await db.run(query, [request.params.id]);
   response.json({ result: "One row delete" });
