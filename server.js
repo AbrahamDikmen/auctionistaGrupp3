@@ -41,6 +41,12 @@ server.get('/data/anvandare', async (request, response)=>{
     let result = await db.all(query)
     response.json(result)
 
+server.get("/data/anvandare", async (request, response) => {
+  let query = "SELECT * FROM anvandare";
+  let result = await db.all(query);
+  response.json(result);
+});
+
 //Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. / J&M
 server.get("/data/objekt/summary-list", async (request, response) => {
   let query = "SELECT titel, start_pris, bild FROM objekt";
