@@ -190,11 +190,10 @@ server.post("/data/new_auction_object", async (request, response) => {
 
 /* 
 14.Som besökare vill jag kunna se auktioner inom kategorier.
-15.Som besökare vill jag kunna söka på auktioner inom en kategori jag valt.
-16.Som besökare vill jag kunna se auktioner baserat på status (pågående, avslutade, sålda, ej sålda). 
+15.Som besökare vill jag kunna söka på auktioner inom en kategori jag valt. 
 */
 
-// Feature filter by category (14 & 15)
+// 14 & 15. Feature filter by category 
 
 //Code for filter by text
 // Cykel
@@ -284,6 +283,8 @@ server.get("/data/category/teknik", async (request, response) => {
   let result = await db.all(query, [request.params.id]);
   response.json(result);
 });
+
+// 16.Som besökare vill jag kunna se auktioner baserat på status (pågående, avslutade, sålda, ej sålda).
 
 // 16. Feature filter by status
 
