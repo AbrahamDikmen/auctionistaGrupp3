@@ -194,7 +194,7 @@ server.get("/data/auctionista/objekt", async (request, response) => {
     "SELECT id, dold_slutpris, start_pris FROM objekt WHERE objekt.id = ?";
 
   const [obj] = await db.all(query, [request.body.id]); // Array med ett objekt { data }
-
+  console.log([obj]);
   if (obj.dold_slutpris < obj.start_pris) {
     response.json({ response: "SOLD" });
   }
