@@ -189,7 +189,7 @@ server.post("/data/new_auction_object", async (request, response) => {
 });
 
 /*13.Som användare vill jag kunna sätta ett dolt reservationspris på mina auktionsobjekt. (om bud ej uppnått reservationspris när auktionen avslutas så säljs objektet inte).*/
-server.get("/auctionista/objekt", async (request, response) => {
+server.get("/data/auctionista/objekt", async (request, response) => {
   let query =
     "SELECT id, dold_slutpris, start_pris FROM objekt WHERE objekt.id = ?";
 
