@@ -389,6 +389,7 @@ server.get("/data/anvandare/:id", async (request, response) => {
 // 21. Som användare vill jag att min publika profilsida innehåller information om hur många auktioner jag köpt och sålt.
 
 // Köpta objekt
+// /data/13/antal_kopta_objekt
 server.get("/data/:anvandare/antal_kopta_objekt", async (request, response) => {
   let query =
     "SELECT anvandare.anvandarnamn, bud.bud_givare, COUNT (objekt.titel) FROM anvandare, bud, objekt WHERE anvandare.id = ? AND bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND (objekt.status = 2 OR objekt.status = 3) AND bud.bud_pris = (SELECT MAX(bud_pris) FROM bud WHERE objekt.id = bud.objekt_id)";
@@ -397,6 +398,7 @@ server.get("/data/:anvandare/antal_kopta_objekt", async (request, response) => {
 });
 
 // Sålda objekt
+// /data/5/antal_kopta_objekt
 server.get("/data/:anvandare/antal_salda_objekt", async (request, response) => {
   let query =
     "SELECT anvandare.anvandarnamn, COUNT (objekt.titel) FROM anvandare, objekt WHERE anvandare.id = ? AND objekt.saljare = anvandare.id AND (objekt.status = 2 OR objekt.status = 3)";
