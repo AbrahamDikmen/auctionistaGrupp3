@@ -398,7 +398,7 @@ server.get("/data/:anvandare/antal_kopta_objekt", async (request, response) => {
 });
 
 // Sålda objekt
-// /data/5/antal_kopta_objekt
+// /data/5/antal_salda_objekt
 server.get("/data/:anvandare/antal_salda_objekt", async (request, response) => {
   let query =
     "SELECT anvandare.anvandarnamn, COUNT (objekt.titel) FROM anvandare, objekt WHERE anvandare.id = ? AND objekt.saljare = anvandare.id AND (objekt.status = 2 OR objekt.status = 3)";
