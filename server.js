@@ -35,44 +35,16 @@ db.run = util.promisify(db.run);
 
 const req = require("express/lib/request");
 
-//Som besökare vill jag kunna se sammanfattade auktionsobjekt som en lista. / J&M
-server.get("/data/objekt/summary-list", async (request, response) => {
-  let query = "SELECT titel, start_pris, bild FROM objekt";
-  let result = await db.all(query);
-  response.json(result);
-});
-//Som besökare vill jag kunna se detaljer för varje auktionsobjekt. / J&M
-server.get("/data/objekt/details", async (request, response) => {
+server.get("/data/:anvandare/antal_kopta_objekt", async (request, response) => {
   let query =
-    "SELECT anvandare.anvandarnamn, objekt.saljare, objekt.beskrivning, objekt.titel, objekt.kategori, objekt.start_tid, objekt.slut_tid, objekt.bild, objekt.start_pris, objekt.status FROM objekt,anvandare WHERE anvandare.id = objekt.saljare";
-  let result = await db.all(query);
+    "SELECT anvandare.anvandarnamn, bud.bud_givare, COUNT (objekt.titel) FROM anvandare, bud, objekt WHERE anvandare.id = ? AND bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND (objekt.status = 2 OR objekt.status = 3) AND bud.bud_pris = (SELECT MAX(bud_pris) FROM bud WHERE objekt.id = bud.objekt_id)";
+  let result = await db.all(query, [request.params.anvandare]);
   response.json(result);
 });
-//Som besökare vill jag kunna se nuvarande bud på auktionsobjekt i listvyer / J&M
-server.get("/data/objekt/bid-list", async (request, response) => {
+
+server.get("/data/:anvandare/antal_salda_objekt", async (request, response) => {
   let query =
-    "SELECT titel, bud_pris FROM objekt, bud WHERE objekt.id = bud.id;";
-  let result = await db.all(query);
+    "SELECT anvandare.anvandarnamn, COUNT (objekt.titel) FROM anvandare, objekt WHERE anvandare.id = ? AND objekt.saljare = anvandare.id AND (objekt.status = 2 OR objekt.status = 3)";
+  let result = await db.all(query, [request.params.anvandare]);
   response.json(result);
-});
-
-server.post("/data/login", async (request, response) => {
-  let query = await db.all(
-    "SELECT id, anvandarnamn, losenord FROM Anvandare WHERE anvandarnamn = ? AND losenord = ?",
-    [request.body.anvandarnamn, request.body.losenord]
-  );
-
-  /*
-    OM query arrayn är större än 0
-    Lägg till Användaren i session 
-    skicka tillbaka användaren
-  */
-
-  if (query.length > 0) {
-    request.session.query = query[0];
-    response.json(query[0]);
-    return;
-  } else {
-    response.json({ status: "Wrong Username/Password" });
-  }
 });
