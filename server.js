@@ -385,7 +385,24 @@ server.get("/data/anvandare/:id", async (request, response) => {
   let result = await db.all(query, [request.params.id]);
   response.json(result);
 });
-//21
+
+// 21. Som användare vill jag att min publika profilsida innehåller information om hur många auktioner jag köpt och sålt.
+
+// Köpta objekt
+server.get("/data/:anvandare/antal_kopta_objekt", async (request, response) => {
+  let query =
+    "SELECT anvandare.anvandarnamn, bud.bud_givare, COUNT (objekt.titel) FROM anvandare, bud, objekt WHERE anvandare.id = ? AND bud.bud_givare = anvandare.id AND bud.objekt_id = objekt.id AND (objekt.status = 2 OR objekt.status = 3) AND bud.bud_pris = (SELECT MAX(bud_pris) FROM bud WHERE objekt.id = bud.objekt_id)";
+  let result = await db.all(query, [request.params.anvandare]);
+  response.json(result);
+});
+
+// Sålda objekt
+server.get("/data/:anvandare/antal_salda_objekt", async (request, response) => {
+  let query =
+    "SELECT anvandare.anvandarnamn, COUNT (objekt.titel) FROM anvandare, objekt WHERE anvandare.id = ? AND objekt.saljare = anvandare.id AND (objekt.status = 2 OR objekt.status = 3)";
+  let result = await db.all(query, [request.params.anvandare]);
+  response.json(result);
+});
 
 // 22. Som köpare vill jag kunna ge ett betyg efter köp av ett auktionsobjekt.
 // 23.Som säljare vill jag kunna ge ett betyg efter försäljning av ett auktionsobjekt.
