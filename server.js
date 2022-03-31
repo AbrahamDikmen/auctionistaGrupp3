@@ -50,14 +50,32 @@ server.get("/data/objekt/details", async (request, response) => {
   response.json(result);
 });
 
-//3. Som besökare vill jag kunna söka på auktioner baserat på vad jag skriver i ett sökfält.
-server.get("/data/search/:string", async (request, response) => {
-  let query = `SELECT * FROM  objekt WHERE INSTR(LOWER(objekt.titel), LOWER(?))>0 OR INSTR(LOWER(objekt.beskrivning), LOWER(?))>0`;
-  let result = await db.all(
-    query,
-    request.params.string,
-    request.params.string
-  );
+//3.15.
+server.get("/data/objekt/:kategori/:string", async (request, response) => {
+
+  let query = `SELECT objekt.id,objekt.titel,kategorier.kategori,status.status,objekt.bild,objekt.start_pris,objekt.start_tid,objekt.slut_tid,objekt.beskrivning,MAX(bud.bud_pris) AS aktuellt_bud FROM
+   objekt,kategorier,status LEFT JOIN bud ON bud.objekt_id = objekt.id WHERE (INSTR(LOWER(objekt.titel), LOWER(?))>0 OR 
+  INSTR(LOWER(objekt.beskrivning), LOWER(?))>0) AND kategorier.id = objekt.kategori AND status.id = objekt.status`;
+
+  let result;
+  if (request.params.kategori != "all") {
+    query += ` AND kategorier.kategori = ? GROUP BY objekt.id`;
+
+    result = await db.all(
+      query,
+      [request.params.string,
+      request.params.string,
+      request.params.kategori]
+    );
+  }
+  else {
+    query += ` GROUP BY objekt.id`;
+    result = await db.all(
+      query,
+      [request.params.string,
+      request.params.string]
+    );
+  }
   response.json(result);
 });
 
@@ -137,10 +155,6 @@ server.post("/data/bud", async (req, res) => {
 
   query = `SELECT saljare, status.status, start_pris FROM objekt,status WHERE objekt.id = ? AND objekt.status = status.id`;
   let object = (await db.all(query, req.body.objekt_id))[0];
-
-  console.log(currentBid);
-  console.log(object);
-  console.log(req.body);
 
   if (
     (currentBid && req.body.bud_pris <= currentBid.bud_pris) ||
